@@ -4,36 +4,41 @@ export class ServerClient extends EventEmitter {
 	constructor(ws) {
 		super();
 		this.ws = ws;
+		let that = this;
 		for (let event of ["close", "error", "message", "open"]) {
 			let name = `on${event}`;
 			this.ws[name] = e => {
-				let body;
+				let payload;
 				let message;
+				let body;
 				try {
-					body = JSON.parse(e.data);
-					message = body.message;
+					payload = JSON.parse(e.data);
+					body = JSON.parse(payload.body);
+					message = payload.message;
 				}
 				catch (e) {
-					body = e.data;
+					payload = e.data;
 					message = null;
+					body = null;
 				}
 				this.emit(event, {
+					payload,
 					body,
 					message,
-					event: e
+					event: e,
+					reply(body) {
+						that.send({
+							message,
+							body
+						});
+					}
 				});
 			};
 		}
 	}
-	send(payload) {
-		this.ws.send(JSON.stringify(payload));
-	}
-	reply(body, receivedBody) {
-		let message = receivedBody.message;
-		this.send({
-			message,
-			body
-		});
+	send(body) {
+		console.log(body);
+		this.ws.send(JSON.stringify(body));
 	}
 }
 export default ServerClient;
