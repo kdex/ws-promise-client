@@ -44,7 +44,7 @@ export class Client extends EventEmitter {
 		return new Promise((resolve, reject) => {
 			let data = JSON.stringify({
 				message: this.message,
-				payload: JSON.stringify(payload)
+				body: JSON.stringify(payload)
 			});
 			let timer = setTimeout(() => {
 				reject(null);
