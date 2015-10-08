@@ -4,7 +4,7 @@
   "description": "A tiny subprotocol on top of WebSockets allowing JavaScript request-response usage",
   "main": "src/index",
   "format": "es6",
-  "files": "src/*",
+  "files": ["src/*"],
   "registry": "npm",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
