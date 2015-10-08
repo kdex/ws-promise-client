@@ -37,7 +37,6 @@ export class ServerClient extends EventEmitter {
 		}
 	}
 	send(body) {
-		console.log(body);
 		this.ws.send(JSON.stringify(body));
 	}
 }
