@@ -25,6 +25,6 @@
   },
   "files": ["src/*"],
   "jspm": {
-    "files": ["dist/*"],
+    "files": ["dist/*"]
   }
 }
