@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A tiny subprotocol on top of WebSockets allowing JavaScript request-response usage",
   "main": "dist/index",
-  "format": "es6",
+  "format": "amd",
   "files": ["dist/*"],
   "registry": "npm",
   "scripts": {
