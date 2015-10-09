@@ -1,0 +1,1 @@
+System.register(["./Client","./Server"],function(e){"use strict";var t,r;return{setters:[function(e){t=e.Client},function(e){r=e.Server}],execute:function(){e("Client",t),e("Server",r),e("default",{Client:t,Server:r})}}});

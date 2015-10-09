@@ -2,9 +2,9 @@
   "name": "websocket-promise",
   "version": "1.0.0",
   "description": "A tiny subprotocol on top of WebSockets allowing JavaScript request-response usage",
-  "main": "src/index",
+  "main": "dist/index",
   "format": "es6",
-  "files": ["src/*"],
+  "files": ["dist/*"],
   "registry": "npm",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
