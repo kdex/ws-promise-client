@@ -24,5 +24,3 @@ await ws.open();
 let response = ws.send("Hi, I'm a browser!");
 console.log(response); // "Hello, I'm a server!"
 ```
-# Supporting browsers
-Note that without custom adjustments, you'll have to use an ES2015 module loader such as [SystemJS](https://github.com/systemjs/systemjs) to run this in your browser. This project can also used from `jspm`.
