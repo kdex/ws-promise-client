@@ -1,0 +1,1 @@
+!function(e,r){if("function"==typeof define&&define.amd)define(["exports","./Client","./Server"],r);else if("undefined"!=typeof exports)r(exports,require("./Client"),require("./Server"));else{var t={exports:{}};r(t.exports,e.Client,e.Server),e.index=t.exports}}(this,function(e,r,t){"use strict";e.Client=r.Client,e.Server=t.Server,e["default"]={Client:r.Client,Server:t.Server}});
