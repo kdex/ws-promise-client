@@ -1,10 +1,4 @@
 import EventEmitter from "./EventEmitter.js";
-function closeConnection(target, ...rest) {
-	/* Close connections if they weren't properly closed */
-	if (target.ws) {
-		target.ws.close();
-	}
-}
 export class Client extends EventEmitter {
 	constructor(url, protocols) {
 		super();
@@ -14,31 +8,46 @@ export class Client extends EventEmitter {
 			protocols
 		};
 	}
-	@closeConnection
-	async open() {
+	open() {
 		return new Promise((resolve, reject) => {
-			this.ws = new WebSocket(this.wsOptions.url, this.wsOptions.protocols);
-			/* Forward events to listeners if they were declared on the client */
-			for (let event of ["close", "error"]) {
-				let name = `on${event}`;
-				this.ws[name] = (...args) => {
-					if (this[name]) {
-						this[name](...args);
-					}
-				};
+			let closed = false;
+			if (this.ws) {
+				closed = this.close();
 			}
-			this.ws.onopen = e => {
-				resolve(e);
-			};
-			this.ws.onmessage = e => {
-				let raw = e.data;
-				let json = JSON.parse(raw);
-				this.emit(json.message, json.body);
-			};
+			/* Wait for already connected client to close first */
+			Promise.resolve(closed).then(() => {
+				this.ws = new WebSocket(this.wsOptions.url, this.wsOptions.protocols);
+				this.ws.onopen = e => {
+					this.emit("open", e);
+					resolve(e);
+				};
+				this.ws.onerror = e => {
+					this.emit("error", e);
+					reject(e);
+				};
+				this.ws.onmessage = e => {
+					this.emit("message", e);
+					let raw = e.data;
+					let json = JSON.parse(raw);
+					this.emit(json.message, json.body);
+				};
+			});
 		});
 	}
-	@closeConnection
-	async close() {
+	close() {
+		return new Promise((resolve, reject) => {
+			if (this.ws) {
+				this.ws.onclose = e => {
+					this.emit("close", e);
+					resolve(e);
+					this.ws = null;
+				};
+				this.ws.close();
+			}
+			else {
+				reject(new Error("WebSocket hasn't been initialized"));
+			}
+		});
 	}
 	send(payload, timeout = 10000) {
 		return new Promise((resolve, reject) => {
