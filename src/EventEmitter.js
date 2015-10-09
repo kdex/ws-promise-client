@@ -1,7 +1,19 @@
+function synonym(name) {
+	return (target, method) => {
+		let synonymize = array => {
+			if (array.some(elm => elm.name === method && elm.type === "add")) {
+				target[name] = target[method];
+				Object.unobserve(target, synonymize);
+			}
+		};
+		Object.observe(target, synonymize);
+	};
+}
 export class EventEmitter {
 	constructor() {
 		this.events = new Map();
 	}
+	@synonym("on")
 	addEventListener(event, callback) {
 		if (callback instanceof Function) {
 			/* Retrieve the listeners for this event type */
@@ -21,6 +33,7 @@ export class EventEmitter {
 			throw new TypeError();
 		}
 	}
+	@synonym("off")
 	removeEventListener(event, callback) {
 		if (callback instanceof Function) {
 			/* Retrieve the listeners for this event type */
