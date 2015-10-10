@@ -49,7 +49,7 @@ export class Client extends EventEmitter {
 			}
 		});
 	}
-	send(payload, timeout = 10000) {
+	send(payload, timeout = 5000) {
 		return new Promise((resolve, reject) => {
 			let data = JSON.stringify({
 				message: this.message,
@@ -62,7 +62,13 @@ export class Client extends EventEmitter {
 				clearTimeout(timer);
 				resolve(body);
 			});
-			this.ws.send(data);
+			try {
+				this.ws.send(data);
+			}
+			catch (e) {
+				clearTimeout(timer);
+				reject(e);
+			}
 			this.message++;
 		});
 	}
