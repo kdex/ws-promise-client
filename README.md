@@ -8,7 +8,7 @@ Your WebSocket code could roughly map to something like this:
 import WS from "ws-promise-client";
 let ws = new WS("ws://localhost:8080");
 await ws.open();
-let response = ws.send("Hi, I'm a browser!");
+let response = await ws.send("Hi, I'm a browser!");
 console.log(response); // "Hello, I'm a server!"
 ```
 This code creates a client, connects to a server, then sends a message and receives the according reply without the need for setting up any kind of callback.
