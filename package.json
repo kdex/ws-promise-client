@@ -2,7 +2,7 @@
   "name": "websocket-promise",
   "version": "1.0.0",
   "description": "A tiny subprotocol on top of WebSockets allowing JavaScript request-response usage",
-  "main": "dist/index",
+  "main": "dist/common/index.js",
   "format": "amd",
   "files": [
     "dist/common"
@@ -27,6 +27,7 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "jspm": {
+    "main": "dist/system/index.js",
     "files": [
       "dist/system"
     ]
