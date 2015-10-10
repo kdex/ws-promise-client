@@ -1,1 +1,1 @@
-"use strict";var _Client=require("./Client");exports.Client=_Client.Client,exports["default"]={Client:_Client.Client},exports["default"]=_Client["default"];
+"use strict";var _Client=require("./Client");exports.Client=_Client.Client,exports["default"]=_Client.Client;

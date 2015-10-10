@@ -1,4 +1,4 @@
-import EventEmitter from "./EventEmitter.js";
+import EventEmitter from "event-emitter";
 export class Client extends EventEmitter {
 	constructor(url, protocols) {
 		super();

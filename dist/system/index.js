@@ -1,1 +1,1 @@
-System.register(["./Client"],function(t){"use strict";var e,n;return{setters:[function(t){e=t.Client,n=t["default"]}],execute:function(){t("Client",e),t("default",{Client:e}),t("default",n)}}});
+System.register(["./Client"],function(t){"use strict";var e;return{setters:[function(t){e=t.Client}],execute:function(){t("Client",e),t("default",e)}}});
