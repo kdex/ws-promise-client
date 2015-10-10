@@ -62,12 +62,12 @@ export class Client extends EventEmitter {
 				clearTimeout(timer);
 				resolve(body);
 			});
-			try {
+			if (this.ws.readyState === WebSocket.OPEN) {
 				this.ws.send(data);
 			}
-			catch (e) {
+			else {
 				clearTimeout(timer);
-				reject(e);
+				reject(new Error(`WebSocket isn't in "OPEN" state`));
 			}
 			this.message++;
 		});
