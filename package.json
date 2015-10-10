@@ -15,7 +15,7 @@
   "author": "kdex",
   "license": "GPL-3.0",
   "dependencies": {
-    "event-emitter": "github:kdex/event-emitter"
+    "event-emitter": "https://github.com/kdex/event-emitter.git"
   },
   "devDependencies": {
     "babel-core": "^5.8.25",
