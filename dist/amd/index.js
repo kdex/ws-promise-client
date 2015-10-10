@@ -1,1 +1,1 @@
-define(["exports","./Client","./Server"],function(e,r,t){"use strict";e.Client=r.Client,e.Server=t.Server,e["default"]={Client:r.Client,Server:t.Server}});
+define(["exports","./Client"],function(e,t){"use strict";e.Client=t.Client,e["default"]={Client:t.Client},e["default"]=t["default"]});
