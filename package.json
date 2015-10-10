@@ -28,7 +28,6 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "jspm": {
-    "format": "system",
     "main": "dist/system/index.js",
     "files": [
       "dist/system"
