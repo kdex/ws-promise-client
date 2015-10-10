@@ -6,7 +6,7 @@ The API accepts both primitives and Objects; JSON serialization is automatically
 Your WebSocket code could roughly map to something like this:
 ```js
 import WS from "ws-promise-client";
-let ws = new WS.Client("ws://localhost:8080");
+let ws = new WS("ws://localhost:8080");
 await ws.open();
 let response = ws.send("Hi, I'm a browser!");
 console.log(response); // "Hello, I'm a server!"
