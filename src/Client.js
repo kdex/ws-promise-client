@@ -1,4 +1,4 @@
-import EventEmitter from "event-emitter";
+import EventEmitter from "crystal-event-emitter";
 export class Client extends EventEmitter {
 	constructor(url, protocols) {
 		super();
