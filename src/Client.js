@@ -10,6 +10,10 @@ export class Client extends EventEmitter {
 			protocols
 		};
 	}
+	resetWebsocket(e) {
+		this.emit("close", e);
+		this.ws = null;
+	}
 	open() {
 		return new Promise((resolve, reject) => {
 			let closed = false;
@@ -33,16 +37,20 @@ export class Client extends EventEmitter {
 					let json = JSON.parse(raw);
 					this.emit(json.message, json.body);
 				};
+				/* Closed dirtily */
+				this.ws.onclose = e => {
+					this.resetWebsocket(e);
+				};
 			});
 		});
 	}
 	close() {
 		return new Promise((resolve, reject) => {
 			if (this.ws) {
+				/* Closed cleanly */
 				this.ws.onclose = e => {
-					this.emit("close", e);
+					this.resetWebsocket(e);
 					resolve(e);
-					this.ws = null;
 				};
 				this.ws.close();
 			}
