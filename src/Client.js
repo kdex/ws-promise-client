@@ -1,6 +1,11 @@
 import EventEmitter from "crystal-event-emitter";
+const OPTIONS = Symbol("[[Options]]");
 export class Client extends EventEmitter {
-	constructor(url, protocols) {
+	constructor(url, protocols, {
+		autoReconnect = true,
+		reconnectionFactor = 1.2,
+		reconnectionMinimum = 2000
+	} = {}) {
 		super({
 			inferListeners: true
 		});
@@ -8,6 +13,11 @@ export class Client extends EventEmitter {
 		this.wsOptions = {
 			url,
 			protocols
+		};
+		this[OPTIONS] = {
+			autoReconnect,
+			reconnectionFactor,
+			reconnectionMinimum
 		};
 	}
 	resetWebsocket(e) {
@@ -39,7 +49,10 @@ export class Client extends EventEmitter {
 				};
 				/* Closed dirtily */
 				this.ws.onclose = e => {
-					this.resetWebsocket(e);
+					this.close(e);
+					if (this[OPTIONS].autoReconnect && !this.reconnecting) {
+						this.reconnect();
+					}
 				};
 			});
 		});
@@ -52,12 +65,31 @@ export class Client extends EventEmitter {
 					this.resetWebsocket(e);
 					resolve(e);
 				};
-				this.ws.close();
+				if (this.ws.readyState !== WebSocket.CLOSED) {
+					this.ws.close();
+				}
+				else {
+					this.ws.onclose();
+				}
 			}
 			else {
 				reject(new Error("WebSocket hasn't been initialized"));
 			}
 		});
+	}
+	async reconnect(newWaitingTime) {
+		this.reconnecting = true;
+		let waitingTime = newWaitingTime || this[OPTIONS].reconnectionMinimum;
+		try {
+			await this.open();
+			this.reconnecting = false;
+			this.emit("reconnect");
+		}
+		catch (e) {
+			setTimeout(() => {
+				this.reconnect(waitingTime * this[OPTIONS].reconnectionFactor);
+			}, waitingTime);
+		}
 	}
 	send(payload, timeout = 5000) {
 		return new Promise((resolve, reject) => {
