@@ -1,7 +1,9 @@
 import EventEmitter from "crystal-event-emitter";
 export class Client extends EventEmitter {
 	constructor(url, protocols) {
-		super();
+		super({
+			inferListeners: true
+		});
 		this.message = 0;
 		this.wsOptions = {
 			url,
