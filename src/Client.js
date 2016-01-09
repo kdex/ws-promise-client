@@ -35,6 +35,7 @@ export class Client extends EventEmitter {
 				this.ws = new WebSocket(this.wsOptions.url, this.wsOptions.protocols);
 				this.ws.onopen = e => {
 					this.emit("open", e);
+					this.hasBeenOpenBefore = true;
 					resolve(e);
 				};
 				this.ws.onerror = e => {
@@ -49,7 +50,10 @@ export class Client extends EventEmitter {
 				};
 				/* Closed dirtily */
 				this.ws.onclose = e => {
-					this.close(e);
+					this.resetWebsocket(e);
+					if (!this.hasBeenOpenBefore) {
+						this.emit("connectionFailed", e);
+					}
 					if (this[OPTIONS].autoReconnect && !this.reconnecting) {
 						this.reconnect();
 					}
