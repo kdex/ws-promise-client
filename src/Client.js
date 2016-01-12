@@ -139,7 +139,7 @@ export class Client extends EventEmitter {
 		timeout = this[OPTIONS].defaultTimeout
 	} = {}) {
 		return await this.send(payload, {
-			timeout: this[OPTIONS].defaultTimeout,
+			timeout,
 			resolveAfterReply: false,
 			onReply: onIntermediaryResult
 		});
