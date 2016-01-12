@@ -1,10 +1,12 @@
 import EventEmitter from "crystal-event-emitter";
 const OPTIONS = Symbol("[[Options]]");
+const SINGLE_RESPONSE = Symbol("[[Single response]]");
 export class Client extends EventEmitter {
 	constructor(url, protocols, {
 		autoReconnect = true,
 		reconnectionFactor = 1.2,
-		reconnectionMinimum = 2000
+		reconnectionMinimum = 2000,
+		defaultTimeout = 5000
 	} = {}) {
 		super({
 			inferListeners: true
@@ -16,6 +18,7 @@ export class Client extends EventEmitter {
 		};
 		this[OPTIONS] = {
 			autoReconnect,
+			defaultTimeout,
 			reconnectionFactor,
 			reconnectionMinimum
 		};
@@ -32,6 +35,10 @@ export class Client extends EventEmitter {
 			}
 			/* Wait for already connected client to close first */
 			Promise.resolve(closed).then(() => {
+				if (typeof WebSocket === "undefined") {
+					/* "require" shouldn't be transpiled here, so enjoy this hack for node support */
+					global.WebSocket = eval(`require("websocket").w3cwebsocket`);
+				}
 				this.ws = new WebSocket(this.wsOptions.url, this.wsOptions.protocols);
 				this.ws.onopen = e => {
 					this.emit("open", e);
@@ -46,7 +53,7 @@ export class Client extends EventEmitter {
 					this.emit("message", e);
 					let raw = e.data;
 					let json = JSON.parse(raw);
-					this.emit(json.message, json.body);
+					this.emit(json.message, json);
 				};
 				/* Closed dirtily */
 				this.ws.onclose = e => {
@@ -95,18 +102,28 @@ export class Client extends EventEmitter {
 			}, waitingTime);
 		}
 	}
-	send(payload, timeout = 5000) {
+	send(payload, {
+		timeout = this[OPTIONS].defaultTimeout,
+		resolveAfterReply = true,
+		onReply
+	} = {}) {
 		return new Promise((resolve, reject) => {
 			let data = JSON.stringify({
 				message: this.message,
-				body: JSON.stringify(payload)
+				body: JSON.stringify(payload),
+				resolveAfterReply
 			});
 			let timer = setTimeout(() => {
-				reject(null);
+				reject(new Error("Timeout reached"));
 			}, timeout);
-			this.addEventListener(this.message, body => {
-				clearTimeout(timer);
-				resolve(body);
+			this.addEventListener(this.message, reply => {
+				if (onReply instanceof Function) {
+					onReply(reply.body, reply.isFinished);
+				}
+				if (resolveAfterReply || reply.isFinished) {
+					clearTimeout(timer);
+					resolve(reply.body);
+				}
 			});
 			if (this.ws.readyState === WebSocket.OPEN) {
 				this.ws.send(data);
@@ -116,6 +133,15 @@ export class Client extends EventEmitter {
 				reject(new Error(`WebSocket isn't in "OPEN" state`));
 			}
 			this.message++;
+		});
+	}
+	async receive(payload, onIntermediaryResult, {
+		timeout = this[OPTIONS].defaultTimeout
+	} = {}) {
+		return await this.send(payload, {
+			timeout: this[OPTIONS].defaultTimeout,
+			resolveAfterReply: false,
+			onReply: onIntermediaryResult
 		});
 	}
 }

@@ -27,7 +27,8 @@
   "author": "kdex",
   "license": "GPL-3.0",
   "dependencies": {
-    "crystal-event-emitter": "^1.1.2"
+    "crystal-event-emitter": "^1.1.2",
+    "websocket": "^1.0.22"
   },
   "devDependencies": {
     "babel": "^6.3.26",
