@@ -59,11 +59,11 @@ export class Client extends EventEmitter {
 						event: e,
 						reply: async body => {
 							that.send({
-								body,
-								message: json.message
+								body
 							}, {
 								isReply: true,
-								timeout: false
+								timeout: false,
+								message: json.message
 							});
 							that.on(json.message, e => {
 								return e;
@@ -121,11 +121,12 @@ export class Client extends EventEmitter {
 	send(payload, {
 		timeout = this[OPTIONS].defaultTimeout,
 		resolveAfterReply = true,
-		onReply
+		onReply,
+		message = null
 	} = {}) {
 		return new Promise((resolve, reject) => {
 			let data = JSON.stringify({
-				message: this.message,
+				message: message || this.message,
 				body: JSON.stringify(payload),
 				resolveAfterReply
 			});
