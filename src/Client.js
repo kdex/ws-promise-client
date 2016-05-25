@@ -53,7 +53,23 @@ export class Client extends EventEmitter {
 					this.emit("message", e);
 					let raw = e.data;
 					let json = JSON.parse(raw);
-					this.emit(json.message, json);
+					let that = this;
+					this.emit(json.message, {
+						payload: json,
+						event: e,
+						reply: async body => {
+							that.send({
+								body,
+								message: json.message
+							}, {
+								isReply: true,
+								timeout: false
+							});
+							that.on(json.message, e => {
+								return e;
+							});
+						}
+					});
 				};
 				/* Closed dirtily */
 				this.ws.onclose = e => {
@@ -113,9 +129,12 @@ export class Client extends EventEmitter {
 				body: JSON.stringify(payload),
 				resolveAfterReply
 			});
-			let timer = setTimeout(() => {
-				reject(new Error("Timeout reached"));
-			}, timeout);
+			let timer = 0;
+			if (timeout) {
+				timer = setTimeout(() => {
+					reject(new Error("Timeout reached"));
+				}, timeout);
+			}
 			this.addEventListener(this.message, reply => {
 				if (onReply instanceof Function) {
 					onReply(reply.body, reply.isFinished);
