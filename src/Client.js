@@ -1,4 +1,3 @@
-import "babel-polyfill";
 import EventEmitter from "crystal-event-emitter";
 const OPTIONS = Symbol("[[Options]]");
 const SINGLE_RESPONSE = Symbol("[[Single response]]");
