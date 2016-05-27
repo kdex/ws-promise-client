@@ -1,6 +1,6 @@
 import EventEmitter from "crystal-event-emitter";
-const OPTIONS = Symbol("[[Options]]");
-const SINGLE_RESPONSE = Symbol("[[Single response]]");
+import RPCClient from "ws-rpc-client";
+const extensions = Symbol();
 export class Client extends EventEmitter {
 	constructor(url, protocols, {
 		autoReconnect = true,
@@ -11,16 +11,13 @@ export class Client extends EventEmitter {
 		super({
 			inferListeners: true
 		});
-		this.message = 0;
-		this.wsOptions = {
-			url,
-			protocols
-		};
-		this[OPTIONS] = {
+		this[extensions] = {
 			autoReconnect,
 			defaultTimeout,
 			reconnectionFactor,
-			reconnectionMinimum
+			reconnectionMinimum,
+			url,
+			protocols
 		};
 	}
 	resetWebsocket(e) {
@@ -39,7 +36,8 @@ export class Client extends EventEmitter {
 					/* "require" shouldn't be transpiled here, so enjoy this hack for node support */
 					global.WebSocket = eval(`require("websocket").w3cwebsocket`);
 				}
-				this.ws = new WebSocket(this.wsOptions.url, this.wsOptions.protocols);
+				this.ws = new WebSocket(this[extensions].url, this[extensions].protocols);
+				this.rpcClient = new RPCClient(this.ws);
 				this.ws.onopen = e => {
 					this.emit("open", e);
 					this.hasBeenOpenBefore = true;
@@ -51,25 +49,7 @@ export class Client extends EventEmitter {
 				};
 				this.ws.onmessage = e => {
 					this.emit("message", e);
-					let raw = e.data;
-					let json = JSON.parse(raw);
-					let that = this;
-					this.emit(json.message, {
-						payload: json,
-						event: e,
-						reply: async body => {
-							that.send({
-								body
-							}, {
-								isReply: true,
-								timeout: false,
-								message: json.message
-							});
-							that.on(json.message, e => {
-								return e;
-							});
-						}
-					});
+					this.rpcClient.readMessage(e.data);
 				};
 				/* Closed dirtily */
 				this.ws.onclose = e => {
@@ -77,7 +57,7 @@ export class Client extends EventEmitter {
 					if (!this.hasBeenOpenBefore) {
 						this.emit("connectionFailed", e);
 					}
-					if (this[OPTIONS].autoReconnect && !this.reconnecting) {
+					if (this[extensions].autoReconnect && !this.reconnecting) {
 						this.reconnect();
 					}
 				};
@@ -106,7 +86,7 @@ export class Client extends EventEmitter {
 	}
 	async reconnect(newWaitingTime) {
 		this.reconnecting = true;
-		let waitingTime = newWaitingTime || this[OPTIONS].reconnectionMinimum;
+		let waitingTime = newWaitingTime || this[extensions].reconnectionMinimum;
 		try {
 			await this.open();
 			this.reconnecting = false;
@@ -114,55 +94,12 @@ export class Client extends EventEmitter {
 		}
 		catch (e) {
 			setTimeout(() => {
-				this.reconnect(waitingTime * this[OPTIONS].reconnectionFactor);
+				this.reconnect(waitingTime * this[extensions].reconnectionFactor);
 			}, waitingTime);
 		}
 	}
-	send(payload, {
-		timeout = this[OPTIONS].defaultTimeout,
-		resolveAfterReply = true,
-		onReply,
-		message = null
-	} = {}) {
-		return new Promise((resolve, reject) => {
-			let data = JSON.stringify({
-				message: message || this.message,
-				body: JSON.stringify(payload),
-				resolveAfterReply
-			});
-			let timer = 0;
-			if (timeout) {
-				timer = setTimeout(() => {
-					reject(new Error("Timeout reached"));
-				}, timeout);
-			}
-			this.addEventListener(this.message, reply => {
-				if (onReply instanceof Function) {
-					onReply(reply.body, reply.isFinished);
-				}
-				if (resolveAfterReply || reply.isFinished) {
-					clearTimeout(timer);
-					resolve(reply.body);
-				}
-			});
-			if (this.ws.readyState === WebSocket.OPEN) {
-				this.ws.send(data);
-			}
-			else {
-				clearTimeout(timer);
-				reject(new Error(`WebSocket isn't in "OPEN" state`));
-			}
-			this.message++;
-		});
-	}
-	async receive(payload, onIntermediaryResult, {
-		timeout = this[OPTIONS].defaultTimeout
-	} = {}) {
-		return await this.send(payload, {
-			timeout,
-			resolveAfterReply: false,
-			onReply: onIntermediaryResult
-		});
+	async send(...args) {
+		return await this.rpcClient.send(...args);
 	}
 }
 export default Client;
