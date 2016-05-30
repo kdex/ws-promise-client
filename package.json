@@ -1,6 +1,6 @@
 {
   "name": "ws-promise-client",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A tiny subprotocol on top of WebSockets allowing JavaScript request-response usage",
   "main": "dist/index.js",
   "files": [
