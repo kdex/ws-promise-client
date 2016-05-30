@@ -6,16 +6,16 @@ export class Client extends EventEmitter {
 		autoReconnect = true,
 		reconnectionFactor = 1.2,
 		reconnectionMinimum = 2000,
-		defaultTimeout = 5000
+		timeout
 	} = {}) {
 		super({
 			inferListeners: true
 		});
 		this[extensions] = {
 			autoReconnect,
-			defaultTimeout,
 			reconnectionFactor,
 			reconnectionMinimum,
+			timeout,
 			url,
 			protocols
 		};
@@ -37,7 +37,9 @@ export class Client extends EventEmitter {
 					global.WebSocket = eval(`require("websocket").w3cwebsocket`);
 				}
 				this.ws = new WebSocket(this[extensions].url, this[extensions].protocols);
-				this.rpcClient = new RPCClient(this.ws);
+				this.rpcClient = new RPCClient(this.ws, {
+					this[extensions].timeout
+				});
 				this.ws.onopen = e => {
 					this.emit("open", e);
 					this.hasBeenOpenBefore = true;
