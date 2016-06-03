@@ -31,7 +31,7 @@ Opens the websocket connection and returns a promise that resolves once the conn
 Closes the websocket connection and returns a promise that resolves once the connection is closed.
 #### WS.prototype.reconnect(initialWaitingTime)
 Reconnects to the websocket connection and returns a promise that resolves once the connection is (re-)opened. Before reconnecting for the first time, there will be a delay of `initialWaitingTime`.
-#### WS.prototype.send(payload, options)
+#### WS.prototype.send(payload, options) (inherited)
 Sends `payload` to the server and returns a promise that, per default, returns a promise that resolves on the first reply that the server sends. The `options` argument is an optional object with the following keys:
 ###### timeout
 Numeric property that determines the timeout to wait in order to reject the promise.
@@ -39,10 +39,6 @@ Numeric property that determines the timeout to wait in order to reject the prom
 Boolean property that determines whether or not to resolve the promise after the first reply.
 ###### onReply(payload, finished)
 Callback function that is called with the server's reply `payload` every time the server sends a reply to this request. If the server has sent its last reply, `finished` will be `true`, otherwise `false`.
-#### WS.prototype.receive(payload, onIntermediaryResult, options)
-Receives multiple replies from the server, sending it `payload` first. If `onIntermediaryResult` is set, it will be called on every reply with the received payload and a boolean that specifies if the corresponding reply was the last. Returns a promise that will resolve with the last reply's payload on the last reply that the server sends. The `options` argument is an optional object with the following keys:
-###### timeout
-Numeric property that determines the timeout to wait in order to reject the promise.
 #### Events
 The following standard WebSocket **client** events can be handled with `on(event, handler):
 - error
