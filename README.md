@@ -6,14 +6,17 @@ The API accepts both primitives and Objects; JSON serialization is automatically
 Your WebSocket code could roughly map to something like this:
 ```js
 import WS from "ws-promise-client";
-let ws = new WS("ws://localhost:8080");
+const ws = new WS("ws://localhost:8080");
 (async () => {
+    /* The client connects (it will, by default, also automatically reconnect) */
     await ws.open();
-    let response = await ws.send("Hi, I'm a browser!");
-    console.log(response); // "Hello, I'm a server!"
+    /* Both parties can have an array of return values in `reply` */
+    const [result] = await ws.send("multiply", undefined, 1, 2, 3);
+    /* Prints `6` */
+    console.log(result);
 })();
 ```
-This code creates a client, connects to a server, then sends a message and receives the according reply without the need for setting up any kind of callback.
+This code creates a client, connects to a server, then sends a message and receives the according reply without the need for setting up any kind of explicit callback or message IDs.
 # API reference
 #### WS.constructor(url, protocols, options)
 Constructs a new `ws-promise-client` connecting to the `url` supporting the subprotocols `protocols`. The `options` argument is an optional object with the following keys:
@@ -23,8 +26,8 @@ Boolean property that determines whether to automatically reconnect to the serve
 Numeric property that determines which factor to multiply the waiting time with after each reconnection try.
 ###### reconnectionMinimum (default: 2000)
 Numeric property that determines the minimum amount of milliseconds to wait before reconnecting. Note that the initial reconnect will be tried immediately after a connection loss, regardless of this amount.
-###### defaultTimeout (default: 5000)
-Numeric property that determines the default timeout to use for promises in order to reject them, unless they are specified explicitly for a message.
+###### rpcOptions
+An option object that will be passed to `ws-rpc-client`.
 #### WS.prototype.open()
 Opens the websocket connection and returns a promise that resolves once the connection is open.
 #### WS.prototype.close()
