@@ -6,14 +6,17 @@ The API accepts both primitives and Objects; JSON serialization is automatically
 Your WebSocket code could roughly map to something like this:
 ```js
 import WS from "ws-promise-client";
-let ws = new WS("ws://localhost:8080");
+const ws = new WS("ws://localhost:8080");
 (async () => {
+    /* The client connects (it will, by default, also automatically reconnect) */
     await ws.open();
-    let response = await ws.send("Hi, I'm a browser!");
-    console.log(response); // "Hello, I'm a server!"
+    /* Both parties can have an array of return values in `reply` */
+    const [result] = await ws.send("multiply", undefined, 1, 2, 3);
+    /* Prints `6` */
+    console.log(result);
 })();
 ```
-This code creates a client, connects to a server, then sends a message and receives the according reply without the need for setting up any kind of callback.
+This code creates a client, connects to a server, then sends a message and receives the according reply without the need for setting up any kind of explicit callback or message IDs.
 # API reference
 #### WS.constructor(url, protocols, options)
 Constructs a new `ws-promise-client` connecting to the `url` supporting the subprotocols `protocols`. The `options` argument is an optional object with the following keys:
@@ -23,15 +26,15 @@ Boolean property that determines whether to automatically reconnect to the serve
 Numeric property that determines which factor to multiply the waiting time with after each reconnection try.
 ###### reconnectionMinimum (default: 2000)
 Numeric property that determines the minimum amount of milliseconds to wait before reconnecting. Note that the initial reconnect will be tried immediately after a connection loss, regardless of this amount.
-###### defaultTimeout (default: 5000)
-Numeric property that determines the default timeout to use for promises in order to reject them, unless they are specified explicitly for a message.
+###### rpcOptions
+An option object that will be passed to `ws-rpc-client`.
 #### WS.prototype.open()
 Opens the websocket connection and returns a promise that resolves once the connection is open.
 #### WS.prototype.close()
 Closes the websocket connection and returns a promise that resolves once the connection is closed.
 #### WS.prototype.reconnect(initialWaitingTime)
 Reconnects to the websocket connection and returns a promise that resolves once the connection is (re-)opened. Before reconnecting for the first time, there will be a delay of `initialWaitingTime`.
-#### WS.prototype.send(payload, options)
+#### WS.prototype.send(payload, options) (inherited)
 Sends `payload` to the server and returns a promise that, per default, returns a promise that resolves on the first reply that the server sends. The `options` argument is an optional object with the following keys:
 ###### timeout
 Numeric property that determines the timeout to wait in order to reject the promise.
@@ -39,10 +42,6 @@ Numeric property that determines the timeout to wait in order to reject the prom
 Boolean property that determines whether or not to resolve the promise after the first reply.
 ###### onReply(payload, finished)
 Callback function that is called with the server's reply `payload` every time the server sends a reply to this request. If the server has sent its last reply, `finished` will be `true`, otherwise `false`.
-#### WS.prototype.receive(payload, onIntermediaryResult, options)
-Receives multiple replies from the server, sending it `payload` first. If `onIntermediaryResult` is set, it will be called on every reply with the received payload and a boolean that specifies if the corresponding reply was the last. Returns a promise that will resolve with the last reply's payload on the last reply that the server sends. The `options` argument is an optional object with the following keys:
-###### timeout
-Numeric property that determines the timeout to wait in order to reject the promise.
 #### Events
 The following standard WebSocket **client** events can be handled with `on(event, handler):
 - error
