@@ -98,8 +98,8 @@ export class Client extends EventEmitter {
 			}, waitingTime);
 		}
 	}
-	async send(...args) {
-		return await this.rpcClient.send(...args);
+	async send(payload) {
+		return await this.rpcClient.send(payload);
 	}
 }
 export default Client;
