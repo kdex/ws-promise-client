@@ -1,5 +1,10 @@
 import EventEmitter from "crystal-event-emitter";
-import RPCClient from "ws-rpc-client";
+import {
+	default as RPCClient,
+	ANY,
+	MESSAGE_ACKNOWLEDGEMENT,
+	MESSAGE_REPLY
+} from "ws-rpc-client";
 const extensions = Symbol();
 export class Client extends EventEmitter {
 	constructor(url, protocols, {
@@ -47,10 +52,19 @@ export class Client extends EventEmitter {
 					this.emit("error", e);
 					reject(e);
 				};
-				this.ws.onmessage = e => {
-					this.emit("message", e);
-					this.rpcClient.readMessage(e.data);
-				};
+				this.rpcClient.on(ANY, e => {
+					if (!e.data) {
+						/* Proxy message event */
+						this.emit("message", e);
+					}
+					else {
+						/* Proxy specialized message event */
+						const instruction = e.data.payload.instruction;
+						if (instruction !== MESSAGE_REPLY && instruction !== MESSAGE_ACKNOWLEDGEMENT) {
+							this.emit(instruction, e.data);
+						}
+					}
+				});
 				/* Closed dirtily */
 				this.ws.onclose = e => {
 					this.resetWebsocket(e);

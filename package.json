@@ -28,9 +28,9 @@
   "license": "GPL-3.0",
   "dependencies": {
     "babel-runtime": "^6.9.2",
-    "crystal-event-emitter": "^1.1.3",
+    "crystal-event-emitter": "^1.2.1",
     "websocket": "^1.0.23",
-    "ws-rpc-client": "^2.0.0"
+    "ws-rpc-client": "^2.0.1"
   },
   "devDependencies": {
     "babel": "^6.5.2",
