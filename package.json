@@ -1,6 +1,6 @@
 {
   "name": "ws-promise-client",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "A tiny subprotocol on top of WebSockets allowing JavaScript request-response usage",
   "main": "dist/index.js",
   "files": [
@@ -30,7 +30,7 @@
     "babel-runtime": "^6.9.2",
     "crystal-event-emitter": "^1.2.1",
     "websocket": "^1.0.23",
-    "ws-rpc-client": "^2.0.1"
+    "ws-rpc-client": "^2.1.0"
   },
   "devDependencies": {
     "babel": "^6.5.2",
