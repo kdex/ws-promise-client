@@ -39,7 +39,7 @@ export class Client extends EventEmitter {
 			Promise.resolve(closed).then(() => {
 				if (typeof WebSocket === "undefined") {
 					/* "require" shouldn't be transpiled here, so enjoy this hack for node support */
-					global.WebSocket = eval(`require("websocket").w3cwebsocket`);
+					global.WebSocket = eval(`require("ws").WebSocket`);
 				}
 				this.ws = new WebSocket(this[extensions].url, this[extensions].protocols);
 				this.rpcClient = new RPCClient(this.ws, this[extensions].rpcOptions);

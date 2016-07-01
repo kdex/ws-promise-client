@@ -29,7 +29,7 @@
   "dependencies": {
     "babel-runtime": "^6.9.2",
     "crystal-event-emitter": "^1.2.1",
-    "websocket": "^1.0.23",
+    "ws": "^1.1.1",
     "ws-rpc-client": "^2.1.0"
   },
   "devDependencies": {
