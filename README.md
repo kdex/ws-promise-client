@@ -11,7 +11,10 @@ const ws = new WS("ws://localhost:8080");
     /* The client connects (it will, by default, also automatically reconnect) */
     await ws.open();
     /* Both parties can have an array of return values in `reply` */
-    const [result] = await ws.send("multiply", undefined, 1, 2, 3);
+    const [result] = await ws.send({
+        instruction: "multiply",
+        args: [1, 2, 3]
+    });
     /* Prints `6` */
     console.log(result);
 })();
