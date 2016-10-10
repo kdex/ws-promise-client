@@ -1,8 +1,7 @@
-"use strict";
-import gulp from "gulp";
+import ava from "gulp-ava";
 import babel from "gulp-babel";
+import gulp from "gulp";
 import uglify from "gulp-uglify";
-process.env.FORCE_COLOR = true;
 gulp.task("js", () => {
 	return gulp.src("src/**/*.js")
 		.pipe(babel())
@@ -11,6 +10,10 @@ gulp.task("js", () => {
 		}))
 		.pipe(gulp.dest("dist"));
 });
-gulp.task("default", () => {
-	gulp.start(["js"]);
+gulp.task("test", () => {
+	return gulp.src("tests/**/*.js")
+		.pipe(ava({
+			verbose: true
+		}));
 });
+gulp.task("default", gulp.parallel("js"));
