@@ -3,6 +3,7 @@
   "version": "4.1.5",
   "description": "A tiny subprotocol on top of WebSockets allowing JavaScript request-response usage",
   "main": "dist/index.js",
+  "repository": "kdex/ws-promise-client",
   "files": [
     "dist/*"
   ],
