@@ -1,7 +1,7 @@
 # ws-promise-client
 `ws-promise-client` is a tiny framework that builds a request-response model onto HTML5 WebSockets using ES2015 Promises. You can use this with ES2016's `await`/`async` to simplify your WebSocket API. Both browsers and `node.js` are supported.
 
-The server-side WebSocket implementation used by this project is [ws](https://github.com/websockets/ws). The official server to use with this client can be found at [kdex/ws-promise-server](https://github.com/kdex/ws-promise-server). This client supports any server that adheres to the [RPC protocol](https://github.com/kdex/ws-rpc-client/).
+The official server to use with this client can be found at [kdex/ws-promise-server](https://github.com/kdex/ws-promise-server). This client supports any server that adheres to the [RPC protocol](https://github.com/kdex/ws-rpc-client/).
 # Getting started
 Your WebSocket code could roughly map to something like this:
 ```js
