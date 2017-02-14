@@ -1,6 +1,6 @@
 {
   "name": "ws-promise-client",
-  "version": "4.1.6",
+  "version": "4.1.7",
   "description": "A tiny subprotocol on top of WebSockets allowing request-response usage in ECMAScript",
   "main": "dist/index.js",
   "repository": "kdex/ws-promise-client",
