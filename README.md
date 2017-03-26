@@ -1,5 +1,5 @@
 # Project moved
-This project has moved [here](https://www.npmjs.com/package/ws-promise). This repository is deprecated.
+This project has moved [here](https://github.com/kdex/ws-promise). This repository is deprecated.
 
 # ws-promise-client
 `ws-promise-client` is a tiny framework that builds a request-response model onto HTML5 WebSockets using ES2015 Promises. You can use this with ES2017's `await`/`async` to simplify your WebSocket API. Both browsers and `node.js` are supported.
