@@ -24,24 +24,34 @@ const client = new Client("ws://localhost:8080");
 ```
 This code creates a client, connects to a server, then sends a message and receives the according reply without the need for setting up any kind of explicit callback or message IDs.
 # API reference
+
 #### Client.constructor(url, protocols, options)
 Constructs a new `ws-promise-client` connecting to the `url` supporting the subprotocols `protocols`. The `options` argument is an optional object with the following keys:
+
 ###### autoReconnect (default: true)
 Boolean property that determines whether to automatically reconnect to the server in case of connection losses, and also when the initial connect is unsuccessful.
+
 ###### reconnectionFactor (default: 1.2)
 Numeric property that determines which factor to multiply the waiting time with after each reconnection try.
+
 ###### reconnectionMinimum (default: 2000)
 Numeric property that determines the minimum amount of milliseconds to wait before reconnecting. Note that the initial reconnect will be tried immediately after a connection loss, regardless of this amount.
+
 ###### rpcOptions
 An option object that will be passed to the constructor of `ws-rpc-client`.
+
 #### Client.prototype.open()
 Opens the websocket connection and returns a promise that resolves once the connection is open.
+
 #### Client.prototype.close()
 Closes the websocket connection and returns a promise that resolves once the connection is closed.
+
 #### Client.prototype.reconnect(newWaitingTime)
 Reconnects to the server and returns a `Promise` that resolves once the connection is (re-)opened. Before reconnecting for the first time, there will be a delay of `newWaitingTime`. If `newWaitingTime` is not provided, `reconnectionMinimum` is used.
+
 #### Client.prototype.send(payload)
 Sends `payload` to the server and returns a `Promise` that that resolves when the server's reply has been received. For more information on which keys are needed in `payload`, see [the protocol](https://github.com/kdex/ws-rpc-client/) (which also defines the `send` method).
+
 #### Events
 The following standard WebSocket **client** events are supported:
 - close
